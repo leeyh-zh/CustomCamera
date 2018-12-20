@@ -1,0 +1,6 @@
+org.ffmpeg.android
+drawable ic_action_search
+drawable ic_launcher
+raw ffmpeg
+string app_name
+style AppTheme
