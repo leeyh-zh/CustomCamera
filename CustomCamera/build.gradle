@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.yue.customcamera"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode 3
         versionName "1.1"

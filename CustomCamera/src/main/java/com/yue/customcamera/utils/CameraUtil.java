@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
+import android.util.Log;
 import android.view.Surface;
 
 import com.code.library.utils.LogUtils;
@@ -40,12 +41,12 @@ public class CameraUtil {
         }
     }
 
-    public void camera(Activity activity){
+    public void camera(Activity activity) {
         Intent intent = new Intent(activity, CameraActivity.class);
         activity.startActivityForResult(intent, AppConstant.REQUEST_CODE.CAMERA);
     }
 
-    public int getRecorderRotation(int cameraId){
+    public int getRecorderRotation(int cameraId) {
         android.hardware.Camera.CameraInfo info =
                 new android.hardware.Camera.CameraInfo();
         android.hardware.Camera.getCameraInfo(cameraId, info);
@@ -83,7 +84,7 @@ public class CameraUtil {
      * @param camera
      */
     public void setCameraDisplayOrientation(Activity activity,
-                                                   int cameraId, Camera camera) {
+                                            int cameraId, Camera camera) {
         android.hardware.Camera.CameraInfo info =
                 new android.hardware.Camera.CameraInfo();
         android.hardware.Camera.getCameraInfo(cameraId, info);
@@ -91,10 +92,18 @@ public class CameraUtil {
                 .getRotation();
         int degrees = 0;
         switch (rotation) {
-            case Surface.ROTATION_0: degrees = 0; break;
-            case Surface.ROTATION_90: degrees = 90; break;
-            case Surface.ROTATION_180: degrees = 180; break;
-            case Surface.ROTATION_270: degrees = 270; break;
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
         }
 
         int result;
@@ -121,7 +130,7 @@ public class CameraUtil {
      * @param angle 旋转角度
      * @return bitmap 图片
      */
-    public  Bitmap rotaingImageView(int id, int angle, Bitmap bitmap) {
+    public Bitmap rotaingImageView(int id, int angle, Bitmap bitmap) {
         //旋转图片 动作
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);
@@ -189,20 +198,23 @@ public class CameraUtil {
      * @param minHeight
      * @return
      */
-    public static Size getPropSizeForHeight(List<Size> list, int minHeight) {
+    public static Size getPropSizeForHeight(List<Size> list, float scale, int minHeight) {
         Collections.sort(list, new CameraAscendSizeComparatorForHeight());
-        int i = 0;
         for (Size s : list) {
-            if ((s.width >= minHeight)) {
-                LogUtils.i("s.height===" + s.width);
-                break;
+            Log.d("11111", "相机像素：" + s.height + "x" + s.width + " 屏幕比例：" + scale +
+                    " 像素比例：" + (float) s.height / s.width);
+        }
+        for (Size s : list) {
+            if ((s.width >= minHeight) && Math.abs((float) s.height / s.width - scale) < 0.01) {
+                return s;
             }
-            i++;
         }
-        if (i == list.size()) {
-            i = 0;//如果没找到，就选最小的size
+        for (Size s : list) {
+            if ((s.width >= minHeight) && (float) s.height / s.width == 9f / 16) {
+                return s;
+            }
         }
-        return list.get(i);
+        return null;
     }
 
     //升序 按照高度
